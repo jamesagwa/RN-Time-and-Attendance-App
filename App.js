@@ -1,14 +1,17 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, View } from "react-native";
 import { AppLoading } from "expo";
-import { Container, Text } from "native-base";
 import * as Font from "expo-font";
 import { Ionicons } from "@expo/vector-icons";
 
 import AppContainer from "./config/routes";
+import { AppProvider } from "./config/appContext";
+
+// task manager call
+import "./config/taskManager";
 
 export default function App() {
   const [isReady, setIsReady] = useState(false);
+
   useEffect(() => {
     (async () => {
       await Font.loadAsync({
@@ -24,14 +27,9 @@ export default function App() {
     return <AppLoading />;
   }
 
-  return <AppContainer />;
+  return (
+    <AppProvider>
+      <AppContainer />
+    </AppProvider>
+  );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center"
-  }
-});

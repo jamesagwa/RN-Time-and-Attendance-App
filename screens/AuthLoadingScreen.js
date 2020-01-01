@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import PropTypes from "prop-types";
 import { AsyncStorage, ActivityIndicator } from "react-native";
-import { Container, Text } from "native-base";
+import { Container, Content } from "native-base";
 
 function AuthLoadingScreen({ navigation }) {
   useEffect(() => {
@@ -11,10 +11,18 @@ function AuthLoadingScreen({ navigation }) {
     })();
   }, []);
 
+  const style = {
+    flex: 1,
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center"
+  };
+
   return (
     <Container>
-      <ActivityIndicator />
-      <Text>Loading...</Text>
+      <Content contentContainerStyle={style}>
+        <ActivityIndicator />
+      </Content>
     </Container>
   );
 }
