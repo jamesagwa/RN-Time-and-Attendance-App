@@ -6,11 +6,12 @@ import { StatusBar, Platform } from "react-native";
 import Constants from "expo-constants";
 import * as Location from "expo-location";
 import * as Permissions from "expo-permissions";
+import getLocation from "../api/getLocation";
 
 // screens
 import HomeScreen from "../screens/Home";
 import SettingsScreen from "../screens/Settings";
-import LoginScreen from "../screens/Login";
+import ActivationScreen from "../screens/Activation";
 
 // Auth screen
 import AuthLoadingScreen from "../screens/AuthLoadingScreen";
@@ -29,9 +30,10 @@ const AppNavigator = createStackNavigator(
     }
   }
 );
-const AuthNavigator = createStackNavigator(
+
+const ActivationNavigator = createStackNavigator(
   {
-    Login: LoginScreen
+    Activate: ActivationScreen
   },
   {
     defaultNavigationOptions: {
@@ -45,7 +47,7 @@ const AppContainer = createAppContainer(
     {
       AuthLoading: AuthLoadingScreen,
       App: AppNavigator,
-      Auth: AuthNavigator
+      Activation: ActivationNavigator
     },
     {
       initialRouteName: "AuthLoading"
@@ -54,7 +56,7 @@ const AppContainer = createAppContainer(
 );
 
 const App = () => {
-  const { setGeo } = useAppContext();
+  const { setGeo, setLocation } = useAppContext();
 
   useEffect(() => {
     async function getLocationAsync() {
@@ -75,13 +77,15 @@ const App = () => {
       if (!isGeofencing) {
         await Location.startGeofencingAsync("tamsGeofenceTask", [
           {
-            latitude: Number(location.coords.latitude),
             longitude: Number(location.coords.longitude),
+            latitude: Number(location.coords.latitude),
             radius: Number(100) //in meters
           }
         ]);
       }
-      setGeo(location);
+      const predefinedLocations = await getLocation();
+      setLocation(predefinedLocations);
+      setGeo(prevState => ({ ...prevState, location }));
     }
     getLocationAsync();
 

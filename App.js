@@ -6,7 +6,7 @@ import { Ionicons } from "@expo/vector-icons";
 import AppContainer from "./config/routes";
 import { AppProvider } from "./config/appContext";
 
-// task manager call
+// task manager call in the global scope
 import "./config/taskManager";
 
 export default function App() {

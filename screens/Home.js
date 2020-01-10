@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import * as LocalAuthentication from "expo-local-authentication";
 import {
@@ -15,8 +15,11 @@ import {
   H1
 } from "native-base";
 import { MaterialIcons } from "@expo/vector-icons";
+import * as Location from "expo-location";
+import { View } from "react-native";
 
 function HomeScreen({ navigation }) {
+  const [clockIn, setClockIn] = useState(true);
   // scan data
   const userData = {
     userName: "",
@@ -38,6 +41,15 @@ function HomeScreen({ navigation }) {
         duration: 3000
       });
     } else {
+      Toast.show({
+        text:
+          "You're now within this device's set location! This device can now scan",
+        buttonText: "Okay",
+        type: "success",
+        duration: 3000
+      });
+
+      // setup device for fingerprint scanning
       (async () => {
         try {
           const hasScanOnDevice = await LocalAuthentication.hasHardwareAsync();
@@ -61,6 +73,12 @@ function HomeScreen({ navigation }) {
     alignItems: "center"
   };
 
+  const btnStyle = {
+    // flex: 1,
+    flexDirection: "row",
+    justifyContent: "space-evenly"
+  };
+
   return (
     <Container>
       <Header>
@@ -75,9 +93,28 @@ function HomeScreen({ navigation }) {
       </Header>
       <Content padder contentContainerStyle={style}>
         <MaterialIcons name="fingerprint" size={135} />
-        <H1 style={{ marginTop: 20 }}>CLOCK IN</H1>
+        <H1 style={{ marginTop: 20 }}>{clockIn ? "CLOCK IN" : "CLOCK OUT"}</H1>
         <Text>Place thumb on scanner to scan</Text>
-        <Text>...</Text>
+        <View style={{ ...btnStyle, marginTop: 30 }}>
+          <Button
+            primary={clockIn}
+            bordered={!clockIn}
+            style={{ flex: 1 }}
+            block
+            onPress={() => setClockIn(true)}
+          >
+            <Text>CLOCK IN</Text>
+          </Button>
+          <Button
+            primary={!clockIn}
+            bordered={clockIn}
+            style={{ flex: 1 }}
+            block
+            onPress={() => setClockIn(false)}
+          >
+            <Text>CLOCK OUT</Text>
+          </Button>
+        </View>
       </Content>
     </Container>
   );

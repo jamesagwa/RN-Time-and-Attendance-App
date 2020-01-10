@@ -1,14 +1,14 @@
 import React, { useEffect } from "react";
 import PropTypes from "prop-types";
-import { Form, Item, Input, Label, Button, Text } from "native-base";
+import { Form, Item, Input, Label, Button, Text, Toast } from "native-base";
 import { AsyncStorage } from "react-native";
 import uuid from "uuid/v1";
 import { useForm } from "react-hook-form";
-import * as Location from "expo-location";
 
 import { useAppContext } from "../config/appContext";
+import { adminData } from "../api/mock";
 
-function LoginForm({ navigation }) {
+function LoginForm({ _setAuthenticated }) {
   const { geo } = useAppContext();
   const { register, setValue, handleSubmit } = useForm();
 
@@ -18,43 +18,42 @@ function LoginForm({ navigation }) {
   }, [register]);
 
   const handleSignin = async ({ username, password }) => {
-    const deviceId = uuid();
-    const { coords, timestamp } = geo;
-    const isGeofencing = await Location.hasStartedGeofencingAsync(
-      "tamsGeofenceTask"
-    );
+    const {
+      location: { coords, timestamp }
+    } = geo;
 
-    if (!isGeofencing) {
-      await Location.startGeofencingAsync("tamsGeofenceTask", [
-        {
-          latitude: Number(coords.latitude),
-          longitude: Number(coords.longitude),
-          radius: Number(100) //in meters
-        }
-      ]);
+    if (
+      String(username) == adminData.uname &&
+      String(password) == adminData.pword
+    ) {
+      // login details correct
+      await AsyncStorage.setItem(
+        "token",
+        JSON.stringify({
+          admin: {
+            id: adminData.adminid,
+            username: adminData.uname
+          },
+          deviceLocation: {
+            place: adminData.location,
+            lat: coords && coords.latitude,
+            lng: coords && coords.longitude
+          },
+          deviceId: adminData.deviceid,
+          timestamp
+        })
+      );
+      _setAuthenticated(true);
+    } else {
+      // login details wrong
+      Toast.show({
+        text:
+          "Admin not found! Username and/or password is not correct. Please check and try again",
+        buttonText: "Okay",
+        type: "danger",
+        duration: 3000
+      });
     }
-
-    await AsyncStorage.setItem(
-      "token",
-      JSON.stringify({
-        admin: username,
-        deviceLocation: {
-          place: "",
-          lat: coords.latitude,
-          lng: coords.longitude
-        },
-        authToken:
-          Math.random()
-            .toString(36)
-            .substring(2, 15) +
-          Math.random()
-            .toString(36)
-            .substring(2, 15),
-        deviceId,
-        timestamp
-      })
-    );
-    navigation.navigate("App");
   };
 
   return (

@@ -21,3 +21,9 @@ TaskManager.defineTask("tamsGeofenceTask", function geoFencingTask({
     };
   }
 });
+
+TaskManager.defineTask("fetchEmployeesAdmin", function fetchEmployeesAdmin({
+  data: { eventType, region }
+}) {
+  //
+});

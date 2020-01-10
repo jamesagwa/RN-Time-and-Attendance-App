@@ -6,8 +6,8 @@ import { Container, Content } from "native-base";
 function AuthLoadingScreen({ navigation }) {
   useEffect(() => {
     (async () => {
-      const token = await AsyncStorage.getItem("token");
-      navigation.navigate(token ? "App" : "Auth");
+      const activated = await AsyncStorage.getItem("activated");
+      navigation.navigate(Boolean(activated) ? "App" : "Activation");
     })();
   }, []);
 
